@@ -1,0 +1,29 @@
+﻿@model RegisterDto
+@{
+    ViewData["Title"] = "Register";
+}
+
+<h1>Kullanıcı Kaydı</h1>
+<form method="post">
+
+    <label>Ad</label>
+    <input type="text" asp-for="FirstName"  class="form-control" required/>
+    <br />
+    <label>Soyad</label>
+    <input type="text" asp-for="LastName" class="form-control" required />
+    <br />
+    <label>Kullanıcı Adı</label>
+    <input type="text" asp-for="UserName" class="form-control" required />
+    <br />
+    <label>Email</label>
+    <input type="text" asp-for="Email" class="form-control" required />
+    <br />
+    <label>Şifre</label>
+    <input type="password" asp-for="Password" class="form-control" required />
+    <br />
+    <label>Şifre Tekrarı</label>
+    <input type="password" asp-for="ConfirmPassword" class="form-control" required />
+    <br />
+    <span class="text-danger">@Html.ValidationSummary()</span>
+    <button class="btn btn-outline-dark">Kayıt Ol</button>
+</form>
