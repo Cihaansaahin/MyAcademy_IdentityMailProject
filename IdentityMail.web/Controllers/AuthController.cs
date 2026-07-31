@@ -2,19 +2,14 @@
 using IdentityMail.web.Entities;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Infrastructure;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
 
 namespace IdentityMail.web.Controllers
 {
-    public class AuthController(UserManager<AppUser> _userManager) : Controller
+    public class AuthController(UserManager<AppUser> _userManager,SignInManager<AppUser> _signInManager) : Controller
     {
-        //private readonly UserManager<AppUser> _userManager;
-
-        //public AuthController(UserManager<AppUser> userManager)
-        //{
-        //    _userManager = userManager;
-        //}
-
+       
         public IActionResult Register()
         {
             return View();
@@ -48,6 +43,40 @@ namespace IdentityMail.web.Controllers
                 return View(registerDto);
             }
 
+            return RedirectToAction("Login");
+        }
+
+        public IActionResult Login()
+        {
+            return View();
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> Login(LoginDto loginDto)
+        {
+            var user = await _userManager.FindByEmailAsync(loginDto.Email);
+            if(user== null)
+            {
+
+                ModelState.AddModelError(string.Empty, "Bu Email Sistemde Kayıtlı Değil.");
+                return View(loginDto);
+            }
+
+            var result = await _signInManager.PasswordSignInAsync(user, loginDto.Password, false, false);
+            if (!result.Succeeded)
+            {
+                ModelState.AddModelError(string.Empty, "Email veya Şifre hatalı");
+                return View(loginDto);
+            }
+
+
+
+            return RedirectToAction("Index","Message");
+        }
+
+        public async Task<IActionResult> Logout()
+        {
+            await _signInManager.SignOutAsync();
             return RedirectToAction("Login");
         }
     }
