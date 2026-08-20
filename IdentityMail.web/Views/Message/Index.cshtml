@@ -1,5 +1,37 @@
-﻿@{
+﻿@model List<UserMessage>
+@{
     ViewData["Title"] = "Index";
 }
-<h1>Başarıyla Giriş Yaptınız</h1>
-<a href="/Auth/Logout" class="btn btn-info">Çıkış Yap</a>
+<h1>Merhaba, @ViewBag.fullName</h1>
+
+<h3>Gelen Mesajlar</h3>
+
+<table class="table table-bordered table-hover">
+    <tr>
+        <th>Gönderen Ad Soyad</th>
+        <th>Email</th>
+        <th>Konu</th>
+        <th>Tarih</th>
+        <th>İşlemler</th>
+    </tr>
+
+   
+    
+        @foreach (var item in Model)
+        {
+            <tr>
+
+            <td>@(item.Sender?.FirstName ?? "Bilinmiyor") @(item.Sender?.LastName ?? "")</td>
+            <td>@(item.Sender?.Email ?? "Email yok")</td>
+            <td>@item.Subject</td>
+            <td>@item.SendDate.ToLongTimeString()</td>
+                <td>
+                    <a href="#" class="btn btn-outline-info">Mail Görüntüle</a>
+                    <a href="#" class="btn btn-outline-danget">Sil</a>
+                </td>
+            </tr>
+        }
+    
+</table>
+
+<a href="/Message/SendMail" class="btn btn-outline-dark">Yeni Mail Gönder</a>
