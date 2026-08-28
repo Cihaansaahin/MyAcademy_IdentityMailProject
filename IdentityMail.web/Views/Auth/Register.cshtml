@@ -3,27 +3,236 @@
     ViewData["Title"] = "Register";
 }
 
-<h1>Kullanıcı Kaydı</h1>
-<form method="post">
+<style>
+    * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+    }
 
-    <label>Ad</label>
-    <input type="text" asp-for="FirstName"  class="form-control" required/>
-    <br />
-    <label>Soyad</label>
-    <input type="text" asp-for="LastName" class="form-control" required />
-    <br />
-    <label>Kullanıcı Adı</label>
-    <input type="text" asp-for="UserName" class="form-control" required />
-    <br />
-    <label>Email</label>
-    <input type="text" asp-for="Email" class="form-control" required />
-    <br />
-    <label>Şifre</label>
-    <input type="password" asp-for="Password" class="form-control" required />
-    <br />
-    <label>Şifre Tekrarı</label>
-    <input type="password" asp-for="ConfirmPassword" class="form-control" required />
-    <br />
-    <span class="text-danger">@Html.ValidationSummary()</span>
-    <button class="btn btn-outline-dark">Kayıt Ol</button>
-</form>
+    body {
+        min-height: 100vh;
+        font-family: "Poppins", sans-serif;
+        background: linear-gradient(135deg, #022c22, #064e3b, #0f766e, #042f2e);
+        background-size: 400% 400%;
+        animation: bgMove 15s ease infinite;
+        overflow-x: hidden;
+        overflow-y: auto;
+    }
+
+    @@keyframes bgMove {
+        0% {
+            background-position: 0% 50%;
+        }
+
+        50% {
+            background-position: 100% 50%;
+        }
+
+        100% {
+            background-position: 0% 50%;
+        }
+    }
+
+    .circle {
+        position: absolute;
+        border-radius: 50%;
+        filter: blur(90px);
+        opacity: .45;
+    }
+
+    .circle1 {
+        width: 350px;
+        height: 350px;
+        background: #10b981;
+        top: -120px;
+        left: -100px;
+    }
+
+    .circle2 {
+        width: 320px;
+        height: 320px;
+        background: #06b6d4;
+        bottom: -120px;
+        right: -80px;
+    }
+
+    .register-wrapper {
+        min-height: calc(100vh - 70px);
+        display: flex;
+        justify-content: center;
+        align-items: flex-start;
+        padding: 30px 20px;
+        position: relative;
+        z-index: 2;
+    }
+
+    .register-box {
+        width: 100%;
+        max-width: 520px;
+        border-radius: 30px;
+        padding: 35px;
+        background: rgba(255, 255, 255, .07);
+        backdrop-filter: blur(18px);
+        border: 1px solid rgba(255, 255, 255, .15);
+        box-shadow: 0 25px 60px rgba(0, 0, 0, .45), inset 0 0 1px rgba(255, 255, 255, .4);
+    }
+
+    .logo {
+        width: 90px;
+        height: 90px;
+        margin: auto;
+        border-radius: 50%;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        font-size: 38px;
+        background: linear-gradient(135deg, #10b981, #06b6d4);
+        color: white;
+        box-shadow: 0 0 40px rgba(16, 185, 129, .5);
+        margin-bottom: 25px;
+    }
+
+    h2 {
+        text-align: center;
+        color: white;
+        font-weight: 700;
+    }
+
+    .subtitle {
+        text-align: center;
+        color: #d1fae5;
+        margin-bottom: 35px;
+        opacity: 0.85;
+    }
+
+    .form-label {
+        color: white;
+        margin-bottom: 8px;
+        font-weight: 500;
+    }
+
+    .form-control {
+        background: rgba(255, 255, 255, .08);
+        border: 1px solid rgba(255, 255, 255, .15);
+        border-radius: 14px;
+        color: white;
+        padding: 14px;
+        transition: .3s;
+    }
+
+        .form-control::placeholder {
+            color: #a7f3d0;
+            opacity: 0.6;
+        }
+
+        .form-control:focus {
+            background: rgba(255, 255, 255, .12);
+            border-color: #34d399;
+            color: white;
+            box-shadow: 0 0 18px rgba(52, 211, 153, .35);
+        }
+
+    .btn-register {
+        width: 100%;
+        padding: 15px;
+        border: none;
+        border-radius: 15px;
+        font-size: 17px;
+        font-weight: 600;
+        color: white;
+        background: linear-gradient(135deg, #059669, #0891b2);
+        transition: .35s;
+        margin-top: 10px;
+    }
+
+        .btn-register:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 15px 35px rgba(16, 185, 129, .4);
+        }
+
+    .text-danger {
+        color: #fca5a5 !important;
+    }
+
+    .login-link {
+        margin-top: 25px;
+        text-align: center;
+        color: #d1fae5;
+        opacity: 0.9;
+    }
+
+        .login-link a {
+            color: #6ee7b7;
+            text-decoration: none;
+            font-weight: 600;
+        }
+
+            .login-link a:hover {
+                color: #a7f3d0;
+                text-decoration: underline;
+            }
+</style>
+
+<div class="circle circle1"></div>
+<div class="circle circle2"></div>
+
+<div class="register-wrapper">
+    <div class="register-box">
+        <div class="logo">
+            <i class="bi bi-person-plus-fill"></i>
+        </div>
+
+        <h2>Kayıt Ol</h2>
+
+        <p class="subtitle">
+            Yeni hesabınızı oluşturmak için bilgilerinizi girin.
+        </p>
+
+        <form method="post">
+            <div class="mb-3">
+                <label asp-for="FirstName" class="form-label">Adınız</label>
+                <input asp-for="FirstName" class="form-control" placeholder="Adınız">
+            </div>
+
+            <div class="mb-3">
+                <label asp-for="LastName" class="form-label">Soyadınız</label>
+                <input asp-for="LastName" class="form-control" placeholder="Soyadınız">
+            </div>
+
+            <div class="mb-3">
+                <label asp-for="UserName" class="form-label">Kullanıcı Adı</label>
+                <input asp-for="UserName" class="form-control" placeholder="Kullanıcı Adınız">
+            </div>
+
+            <div class="mb-3">
+                <label asp-for="Email" class="form-label">E-Posta</label>
+                <input asp-for="Email" class="form-control" placeholder="mail@example.com">
+            </div>
+
+            <div class="mb-3">
+                <label asp-for="Password" class="form-label">Şifre</label>
+                <input asp-for="Password" type="password" class="form-control" placeholder="********">
+            </div>
+
+            <div class="mb-4">
+                <label asp-for="ConfirmPassword" class="form-label">Şifre Tekrar</label>
+                <input asp-for="ConfirmPassword" type="password" class="form-control" placeholder="********">
+            </div>
+
+            <div asp-validation-summary="All" class="text-danger mb-3"></div>
+
+            <button type="submit" class="btn-register">
+                <i class="bi bi-person-check-fill me-2"></i>
+                Hesabı Oluştur
+            </button>
+        </form>
+
+        <div class="login-link">
+            Zaten hesabın var mı?
+            <a href="/Auth/Login">
+                Giriş Yap
+            </a>
+        </div>
+    </div>
+</div>

@@ -2,18 +2,256 @@
 @{
     ViewData["Title"] = "Login";
 }
-<h1>Giriş Yap</h1>
-<form method="post">
+<style>
+    * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+    }
 
-    <label>Email</label>
-    <input type="email" asp-for="Email" class="form-control" required/>
-    <br />
-    <label>Şifre</label>
-    <input type="password" asp-for="Password" class="form-control" required/>
-    <br />
+    body {
+        min-height: 100vh;
+        font-family: "Poppins", sans-serif;
+        background: linear-gradient(135deg, #022c22, #064e3b, #0f766e, #042f2e);
+        background-size: 400% 400%;
+        animation: bgMove 15s ease infinite;
+        overflow: hidden;
+    }
 
-    <span class="text-danger">@Html.ValidationSummary()</span>
+    @@keyframes bgMove {
+        0% {
+            background-position: 0% 50%;
+        }
+        50% {
+            background-position: 100% 50%;
+        }
+        100% {
+            background-position: 0% 50%;
+        }
+    }
 
-    <button class="btn btn-outline-dark">Giriş Yap</button>
+    .circle {
+        position: absolute;
+        border-radius: 50%;
+        filter: blur(80px);
+        opacity: .45;
+    }
 
-</form>
+    .c1 {
+        width: 350px;
+        height: 350px;
+        background: #10b981;
+        top: -100px;
+        left: -100px;
+    }
+
+    .c2 {
+        width: 300px;
+        height: 300px;
+        background: #06b6d4;
+        bottom: -80px;
+        right: -80px;
+    }
+
+    .login-wrapper {
+        min-height: 100vh;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        position: relative;
+        z-index: 2;
+        padding: 20px;
+    }
+
+    .login-box {
+        width: 100%;
+        max-width: 430px;
+        padding: 45px;
+        border-radius: 30px;
+        backdrop-filter: blur(18px);
+        background: rgba(255, 255, 255, .07);
+        border: 1px solid rgba(255, 255, 255, .15);
+        box-shadow: 0 20px 50px rgba(0, 0, 0, .45), inset 0 0 1px rgba(255, 255, 255, .4);
+        color: white;
+    }
+
+    .logo {
+        width: 90px;
+        height: 90px;
+        margin: auto;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        border-radius: 50%;
+        background: linear-gradient(135deg, #10b981, #06b6d4);
+        box-shadow: 0 0 40px rgba(16, 185, 129, .5);
+        font-size: 38px;
+        margin-bottom: 25px;
+    }
+
+    h2 {
+        font-weight: 700;
+        text-align: center;
+    }
+
+    .subtitle {
+        text-align: center;
+        color: #d1fae5;
+        margin-bottom: 35px;
+        opacity: 0.85;
+    }
+
+    .form-label {
+        color: white;
+        font-weight: 500;
+        margin-bottom: 8px;
+    }
+
+    .input-group {
+        background: rgba(255, 255, 255, .08);
+        border: 1px solid rgba(255, 255, 255, .15);
+        border-radius: 15px;
+        overflow: hidden;
+        transition: .3s;
+    }
+
+    .input-group:focus-within {
+        border-color: #34d399;
+        box-shadow: 0 0 20px rgba(52, 211, 153, .35);
+    }
+
+    .input-group-text {
+        background: transparent;
+        color: #6ee7b7;
+        border: none;
+        padding-left: 18px;
+    }
+
+    .form-control {
+        background: transparent;
+        border: none;
+        color: white;
+        padding: 15px;
+        box-shadow: none !important;
+    }
+
+    .form-control::placeholder {
+        color: #a7f3d0;
+        opacity: 0.6;
+    }
+
+    .btn-login {
+        width: 100%;
+        border: none;
+        border-radius: 16px;
+        padding: 15px;
+        font-size: 17px;
+        font-weight: 600;
+        background: linear-gradient(135deg, #059669, #0891b2);
+        color: white;
+        transition: .35s;
+        margin-top: 10px;
+    }
+
+    .btn-login:hover {
+        transform: translateY(-4px);
+        box-shadow: 0 15px 35px rgba(16, 185, 129, .4);
+    }
+
+    .register {
+        margin-top: 30px;
+        text-align: center;
+        color: #d1fae5;
+        opacity: 0.9;
+    }
+
+    .register a {
+        color: #6ee7b7;
+        text-decoration: none;
+        font-weight: 600;
+    }
+
+    .register a:hover {
+        color: #a7f3d0;
+        text-decoration: underline;
+    }
+
+    .text-danger {
+        margin-top: 15px;
+        color: #fca5a5 !important;
+        text-align: center;
+    }
+</style>
+
+<div class="circle c1"></div>
+<div class="circle c2"></div>
+
+<div class="login-wrapper">
+    <div class="login-box">
+        <div class="logo">
+            <i class="bi bi-person-fill"></i>
+        </div>
+
+        <h2>Hoş Geldiniz</h2>
+
+        <p class="subtitle">
+            Devam etmek için hesabınıza giriş yapın.
+        </p>
+
+        <form method="post">
+            <div class="mb-4">
+                <label asp-for="Email" class="form-label">
+                    E-Posta
+                </label>
+                <div class="input-group">
+                    <span class="input-group-text">
+                        <i class="bi bi-envelope-fill"></i>
+                    </span>
+                    <input asp-for="Email"
+                           type="email"
+                           class="form-control"
+                           placeholder="ornek@mail.com" />
+                </div>
+            </div>
+
+            <div class="mb-4">
+                <label asp-for="Password" class="form-label">
+                    Şifre
+                </label>
+                <div class="input-group">
+                    <span class="input-group-text">
+                        <i class="bi bi-lock-fill"></i>
+                    </span>
+                    <input asp-for="Password"
+                           type="password"
+                           class="form-control"
+                           placeholder="********" />
+                </div>
+            </div>
+
+            <div class="text-danger">
+                @Html.ValidationSummary()
+            </div>
+
+            <button class="btn-login">
+                <i class="bi bi-box-arrow-in-right me-2"></i>
+                Giriş Yap
+            </button>
+        </form>
+
+        <div class="register">
+            Hesabın yok mu?
+            <a href="/Auth/Register">
+                Kayıt Ol
+            </a>
+            <div class="d-flex justify-content-end mb-2">
+                <a asp-controller="Security"
+                   asp-action="ForgotPassword"
+                   class="text-decoration-none text-light fw-semibold">
+                    <i class="bi bi-question-circle me-1"></i>
+                    Şifremi Unuttum
+                </a>
+            </div>
+        </div>
+    </div>
+</div>

@@ -1,6 +1,7 @@
 using IdentityMail.web.Context;
 using IdentityMail.web.CustomValidation;
 using IdentityMail.web.Entities;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -55,5 +56,36 @@ app.MapControllerRoute(
     pattern: "{controller=Home}/{action=Index}/{id?}")
     .WithStaticAssets();
 
+using (var scope = app.Services.CreateScope())
+{
+    var services = scope.ServiceProvider;
+
+    var roleManager = services.GetRequiredService<RoleManager<AppRole>>();
+
+    string[] roles = { "Admin", "User" };
+
+    foreach (var role in roles)
+    {
+        if (!await roleManager.RoleExistsAsync(role))
+        {
+            await roleManager.CreateAsync(new AppRole
+            {
+                Name = role
+            });
+        }
+    }
+
+    var userManager = services.GetRequiredService<UserManager<AppUser>>();
+
+    var adminUser = await userManager.FindByEmailAsync("programmercagan@gmail.com");
+
+    if (adminUser != null)
+    {
+        if (!await userManager.IsInRoleAsync(adminUser, "Admin"))
+        {
+            await userManager.AddToRoleAsync(adminUser, "Admin");
+        }
+    }
+}
 
 app.Run();
