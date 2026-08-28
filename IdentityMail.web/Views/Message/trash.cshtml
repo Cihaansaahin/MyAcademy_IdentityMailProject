@@ -1,0 +1,877 @@
+﻿@model List<UserMessage> 
+@{
+    ViewData["Title"] = "Çöp Kutusu";
+    var starredCount = Model.Count(m => m.IsStarred);
+}
+
+<!-- Bootstrap Icons & Google Fonts (Poppins) -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+
+<style>
+    /* ========== THEME & VARIABLES ========== */
+    :root {
+        --brand-1: #022c22;
+        --brand-2: #064e3b;
+        --brand-3: #059669;
+        --brand-4: #10b981;
+        --brand-5: #06b6d4;
+        --glass-bg: rgba(255, 255, 255, 0.85);
+        --glass-bg-hover: rgba(255, 255, 255, 0.95);
+        --glass-border: rgba(255, 255, 255, 0.4);
+        --glass-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.12);
+        --text-main: #0f172a;
+        --text-muted: #64748b;
+    }
+
+    * {
+        font-family: 'Poppins', sans-serif;
+    }
+
+    /* ========== ANIMATED BACKGROUND ========== */
+    .mail-shell {
+        min-height: 100vh;
+        padding: 24px;
+        background: linear-gradient(-45deg, #022c22, #064e3b, #0f766e, #042f2e);
+        background-size: 400% 400%;
+        animation: gradientBG 15s ease infinite;
+        color: var(--text-main);
+    }
+
+    @@keyframes gradientBG {
+        0% {
+            background-position: 0% 50%;
+        }
+
+        50% {
+            background-position: 100% 50%;
+        }
+
+        100% {
+            background-position: 0% 50%;
+        }
+    }
+
+    .mail-layout {
+        display: grid;
+        grid-template-columns: 320px 1fr;
+        gap: 24px;
+        max-width: 1600px;
+        margin: 0 auto;
+        align-items: start;
+    }
+
+    /* ========== GLASSMORPHISM CONTAINER ========== */
+    .glass-card {
+        background: var(--glass-bg);
+        backdrop-filter: blur(16px);
+        -webkit-backdrop-filter: blur(16px);
+        border: 1px solid var(--glass-border);
+        box-shadow: var(--glass-shadow);
+        border-radius: 24px;
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    /* ========== LEFT SIDEBAR ========== */
+    .mail-sidebar {
+        padding: 24px;
+        position: sticky;
+        top: 24px;
+        display: flex;
+        flex-direction: column;
+        gap: 20px;
+    }
+
+    /* User Profile Card */
+    .user-profile-card {
+        background: rgba(255, 255, 255, 0.6);
+        border: 1px solid rgba(255, 255, 255, 0.8);
+        border-radius: 20px;
+        padding: 16px;
+        display: flex;
+        align-items: center;
+        gap: 14px;
+        position: relative;
+    }
+
+    .avatar-wrapper {
+        position: relative;
+    }
+
+    .user-avatar {
+        width: 52px;
+        height: 52px;
+        border-radius: 16px;
+        object-fit: cover;
+        box-shadow: 0 4px 12px rgba(16, 185, 129, 0.2);
+    }
+
+    .user-avatar-ui {
+        width: 52px;
+        height: 52px;
+        border-radius: 16px;
+        background: linear-gradient(135deg, #10b981, #06b6d4);
+        color: #fff;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: 700;
+        font-size: 1.25rem;
+        box-shadow: 0 4px 12px rgba(16, 185, 129, 0.25);
+    }
+
+    .online-indicator {
+        width: 12px;
+        height: 12px;
+        background: #10b981;
+        border: 2px solid #fff;
+        border-radius: 50%;
+        position: absolute;
+        bottom: -2px;
+        right: -2px;
+    }
+
+    .user-info-name {
+        font-weight: 700;
+        font-size: 1rem;
+        color: var(--text-main);
+        line-height: 1.2;
+    }
+
+    .user-welcome-badge {
+        display: inline-block;
+        font-size: 0.7rem;
+        font-weight: 600;
+        color: var(--brand-3);
+        background: rgba(16, 185, 129, 0.12);
+        padding: 2px 8px;
+        border-radius: 10px;
+        margin-top: 4px;
+    }
+
+    /* Stats Grid */
+    .stats-grid {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 10px;
+    }
+
+    .stat-card {
+        background: rgba(255, 255, 255, 0.5);
+        border: 1px solid rgba(255, 255, 255, 0.6);
+        border-radius: 16px;
+        padding: 12px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        text-align: center;
+        transition: transform 0.25s ease, background 0.25s ease;
+    }
+
+        .stat-card:hover {
+            transform: translateY(-3px) scale(1.02);
+            background: rgba(255, 255, 255, 0.85);
+        }
+
+    .stat-icon {
+        font-size: 1.2rem;
+        color: var(--brand-3);
+        margin-bottom: 4px;
+    }
+
+    .stat-value {
+        font-weight: 800;
+        font-size: 1.1rem;
+        color: var(--text-main);
+        line-height: 1;
+    }
+
+    .stat-label {
+        font-size: 0.7rem;
+        font-weight: 600;
+        color: var(--text-muted);
+        margin-top: 4px;
+    }
+
+    /* Action & Navigation */
+    .btn-compose-premium {
+        width: 100%;
+        border: none;
+        border-radius: 16px;
+        padding: 14px 20px;
+        font-weight: 700;
+        background: linear-gradient(135deg, #059669, #0891b2);
+        color: #fff;
+        box-shadow: 0 8px 20px rgba(16, 185, 129, 0.35);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 10px;
+        text-decoration: none;
+        transition: all 0.25s ease;
+    }
+
+        .btn-compose-premium:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 12px 24px rgba(16, 185, 129, 0.45);
+            color: #fff;
+        }
+
+    .mail-nav-list {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+        display: flex;
+        flex-direction: column;
+        gap: 6px;
+    }
+
+    .mail-nav-item {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 12px 16px;
+        border-radius: 14px;
+        color: var(--text-main);
+        text-decoration: none;
+        font-weight: 600;
+        font-size: 0.9rem;
+        transition: all 0.25s ease;
+        position: relative;
+    }
+
+        .mail-nav-item i {
+            font-size: 1.1rem;
+            color: var(--text-muted);
+            transition: color 0.25s ease;
+            margin-right: 12px;
+        }
+
+        .mail-nav-item:hover {
+            background: rgba(255, 255, 255, 0.8);
+            color: var(--brand-3);
+            transform: translateX(4px);
+        }
+
+            .mail-nav-item:hover i {
+                color: var(--brand-3);
+            }
+
+        .mail-nav-item.active {
+            background: #ffffff;
+            color: var(--brand-3);
+            box-shadow: 0 4px 15px rgba(16, 185, 129, 0.18);
+        }
+
+            .mail-nav-item.active i {
+                color: var(--brand-3);
+            }
+
+    .mail-nav-badge {
+        background: rgba(100, 116, 139, 0.1);
+        color: var(--text-muted);
+        font-size: 0.75rem;
+        font-weight: 700;
+        padding: 3px 10px;
+        border-radius: 20px;
+        transition: all 0.25s ease;
+    }
+
+    .mail-nav-item.active .mail-nav-badge {
+        background: var(--brand-3);
+        color: #fff;
+        box-shadow: 0 0 10px rgba(16, 185, 129, 0.4);
+    }
+
+    .btn-logout-premium {
+        margin-top: auto;
+        width: 100%;
+        border-radius: 14px;
+        border: 1px solid rgba(239, 68, 68, 0.2);
+        background: rgba(254, 242, 242, 0.6);
+        color: #ef4444;
+        font-weight: 700;
+        padding: 11px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        text-decoration: none;
+        transition: all 0.25s ease;
+    }
+
+        .btn-logout-premium:hover {
+            background: #ef4444;
+            color: #fff;
+            box-shadow: 0 4px 15px rgba(239, 68, 68, 0.3);
+        }
+
+    /* ========== RIGHT MAIN CONTENT ========== */
+    .mail-main {
+        padding: 28px;
+        min-height: 80vh;
+    }
+
+    .mail-main-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 20px;
+        padding-bottom: 24px;
+        margin-bottom: 24px;
+        border-bottom: 1px solid rgba(226, 232, 240, 0.6);
+        flex-wrap: wrap;
+    }
+
+    .header-title-box h2 {
+        font-weight: 800;
+        font-size: 1.5rem;
+        color: var(--text-main);
+        margin: 0;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+
+    .header-title-box p {
+        color: var(--text-muted);
+        font-size: 0.88rem;
+        margin: 4px 0 0 0;
+    }
+
+    /* Modern Search Input */
+    .mail-search-box {
+        position: relative;
+        flex: 1;
+        min-width: 240px;
+        max-width: 420px;
+    }
+
+        .mail-search-box input {
+            width: 100%;
+            border: 1px solid rgba(255, 255, 255, 0.8);
+            background: rgba(255, 255, 255, 0.6);
+            backdrop-filter: blur(8px);
+            border-radius: 30px;
+            padding: 11px 18px 11px 44px;
+            font-size: 0.9rem;
+            outline: none;
+            color: var(--text-main);
+            transition: all 0.25s ease;
+            box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.02);
+        }
+
+            .mail-search-box input:focus {
+                background: #ffffff;
+                border-color: var(--brand-3);
+                box-shadow: 0 0 0 4px rgba(16, 185, 129, 0.2);
+            }
+
+        .mail-search-box i {
+            position: absolute;
+            left: 16px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--text-muted);
+            font-size: 1rem;
+        }
+
+    .total-count-pill {
+        background: linear-gradient(135deg, #10b981, #06b6d4);
+        color: #fff;
+        font-weight: 700;
+        border-radius: 30px;
+        padding: 8px 18px;
+        font-size: 0.85rem;
+        box-shadow: 0 4px 12px rgba(16, 185, 129, 0.25);
+    }
+
+    /* ========== MAIL CARDS CONTAINER ========== */
+    .mail-cards-list {
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+    }
+
+    .mail-card-row {
+        background: rgba(255, 255, 255, 0.7);
+        border: 1px solid rgba(255, 255, 255, 0.9);
+        border-radius: 18px;
+        padding: 16px 20px;
+        display: flex;
+        align-items: center;
+        gap: 16px;
+        transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+        position: relative;
+    }
+
+        .mail-card-row:hover {
+            background: #ffffff;
+            transform: translateY(-2px) scale(1.005);
+            box-shadow: 0 10px 25px -5px rgba(15, 23, 42, 0.1);
+        }
+
+    /* Star Button */
+    .star-btn {
+        border: none;
+        background: transparent;
+        font-size: 1.25rem;
+        color: #cbd5e1;
+        cursor: pointer;
+        line-height: 1;
+        padding: 6px;
+        transition: all 0.2s ease;
+        flex-shrink: 0;
+    }
+
+        .star-btn:hover {
+            transform: scale(1.2);
+            color: #f59e0b;
+        }
+
+        .star-btn.starred {
+            color: #f59e0b;
+            filter: drop-shadow(0 0 6px rgba(245, 158, 11, 0.4));
+        }
+
+    /* Row Avatar */
+    .row-avatar {
+        width: 46px;
+        height: 46px;
+        border-radius: 14px;
+        background: linear-gradient(135deg, #10b981, #06b6d4);
+        color: #fff;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: 700;
+        font-size: 1.1rem;
+        flex-shrink: 0;
+        box-shadow: 0 4px 10px rgba(16, 185, 129, 0.2);
+    }
+
+    .mail-card-body {
+        flex: 1;
+        min-width: 0;
+    }
+
+    .mail-card-header-info {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        margin-bottom: 4px;
+        flex-wrap: wrap;
+    }
+
+    .sender-fullname {
+        font-weight: 700;
+        font-size: 0.95rem;
+        color: var(--text-main);
+    }
+
+    .sender-email-text {
+        font-weight: 400;
+        color: var(--text-muted);
+        font-size: 0.82rem;
+    }
+
+    .mail-subject-pill {
+        display: inline-block;
+        font-weight: 600;
+        font-size: 0.85rem;
+        color: #1e293b;
+        background: rgba(241, 245, 249, 0.8);
+        padding: 3px 10px;
+        border-radius: 8px;
+        max-width: 100%;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+
+    /* Read / Unread Status Badges */
+    .status-badge {
+        font-size: 0.72rem;
+        font-weight: 700;
+        padding: 4px 10px;
+        border-radius: 20px;
+        display: inline-flex;
+        align-items: center;
+        gap: 5px;
+    }
+
+        .status-badge.read {
+            background: linear-gradient(135deg, #10b981, #059669);
+            color: #fff;
+            box-shadow: 0 0 10px rgba(16, 185, 129, 0.3);
+        }
+
+        .status-badge.unread {
+            background: linear-gradient(135deg, #f59e0b, #d97706);
+            color: #fff;
+            box-shadow: 0 0 10px rgba(245, 158, 11, 0.3);
+        }
+
+    .mail-date-stamp {
+        color: var(--text-muted);
+        font-size: 0.82rem;
+        font-weight: 500;
+        white-space: nowrap;
+        flex-shrink: 0;
+    }
+
+    /* Action Buttons Hover Effect */
+    .mail-action-group {
+        display: flex;
+        gap: 6px;
+        flex-shrink: 0;
+        opacity: 0;
+        transform: translateX(8px);
+        transition: all 0.25s ease;
+    }
+
+    .mail-card-row:hover .mail-action-group {
+        opacity: 1;
+        transform: translateX(0);
+    }
+
+    .action-icon-btn {
+        width: 38px;
+        height: 38px;
+        border-radius: 12px;
+        border: 1px solid rgba(226, 232, 240, 0.8);
+        background: #ffffff;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: var(--text-main);
+        text-decoration: none;
+        transition: all 0.2s ease;
+    }
+
+        .action-icon-btn.view:hover {
+            background: #059669;
+            border-color: #059669;
+            color: #ffffff;
+            box-shadow: 0 4px 10px rgba(16, 185, 129, 0.3);
+        }
+
+        .action-icon-btn.restore:hover {
+            background: #06b6d4;
+            border-color: #06b6d4;
+            color: #ffffff;
+            box-shadow: 0 4px 10px rgba(6, 182, 212, 0.3);
+        }
+
+    /* Empty Box View */
+    .mail-empty-state {
+        text-align: center;
+        padding: 80px 20px;
+        color: var(--text-muted);
+    }
+
+        .mail-empty-state i {
+            font-size: 3.5rem;
+            display: block;
+            margin-bottom: 16px;
+            color: #10b981;
+        }
+
+    /* ========== ENTRANCE ANIMATIONS ========== */
+    .animate-fade-up {
+        animation: fadeUp 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+        opacity: 0;
+    }
+
+    .delay-1 {
+        animation-delay: 0.1s;
+    }
+
+    .delay-2 {
+        animation-delay: 0.2s;
+    }
+
+    .delay-3 {
+        animation-delay: 0.3s;
+    }
+
+    @@keyframes fadeUp {
+        from {
+            opacity: 0;
+            transform: translateY(20px);
+        }
+
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    /* ========== RESPONSIVE DESIGN ========== */
+    @@media (max-width: 992px) {
+        .mail-layout {
+            grid-template-columns: 1fr;
+        }
+
+        .mail-sidebar {
+            position: static;
+        }
+    }
+
+    @@media (max-width: 576px) {
+        .mail-shell {
+            padding: 12px;
+        }
+
+        .mail-main {
+            padding: 16px;
+        }
+
+        .mail-card-row {
+            flex-wrap: wrap;
+        }
+
+        .mail-date-stamp {
+            display: none;
+        }
+
+        .mail-action-group {
+            opacity: 1;
+            transform: translateX(0);
+        }
+    }
+</style>
+
+<div class="mail-shell">
+    <div class="mail-layout">
+
+        <!-- ================= SOL PANEL (SIDEBAR) ================= -->
+        <aside class="glass-card mail-sidebar animate-fade-up delay-1">
+
+            <!-- Profil Kartı -->
+            <div class="user-profile-card">
+                <div class="avatar-wrapper">
+                    @if (ViewBag.ProfileImageUrl != null && !string.IsNullOrEmpty(ViewBag.ProfileImageUrl.ToString()))
+                    {
+                        <img src="@ViewBag.ProfileImageUrl" alt="Profil" class="user-avatar" />
+                    }
+                    else
+                    {
+                        <div class="user-avatar-ui">
+                            @(ViewBag.fullName != null ? ViewBag.fullName.ToString().Substring(0, 1) : "U")
+                        </div>
+                    }
+                    <div class="online-indicator"></div>
+                </div>
+
+                <div style="min-width: 0;">
+                    <div class="user-info-name text-truncate">@ViewBag.fullName</div>
+                    <span class="user-welcome-badge">Hoş Geldin</span>
+                </div>
+            </div>
+
+            <!-- İstatistik Kartları Grid (Opsiyonel) -->
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <i class="bi bi-envelope-fill stat-icon"></i>
+                    <div class="stat-value">@Model.Count</div>
+                    <div class="stat-label">Toplam</div>
+                </div>
+                <div class="stat-card">
+                    <i class="bi bi-star-fill stat-icon"></i>
+                    <div class="stat-value">@starredCount</div>
+                    <div class="stat-label">Önemli</div>
+                </div>
+            </div>
+
+            <!-- Yeni Mesaj Butonu -->
+            <a asp-controller="Message" asp-action="SendMail" class="btn-compose-premium">
+                <i class="bi bi-plus-lg fs-5"></i>
+                <span>Yeni Mesaj</span>
+            </a>
+
+            <!-- Navigasyon Menüsü -->
+            <ul class="mail-nav-list">
+                <li>
+                    <a asp-controller="Message" asp-action="Index" class="mail-nav-item">
+                        <div>
+                            <i class="bi bi-inbox-fill"></i>
+                            <span>Gelen Kutusu</span>
+                        </div>
+                    </a>
+                </li>
+                <li>
+                    <a asp-controller="Message" asp-action="StarredMessages" class="mail-nav-item">
+                        <div>
+                            <i class="bi bi-star-fill"></i>
+                            <span>Yıldızlı</span>
+                        </div>
+                    </a>
+                </li>
+                <li>
+                    <a asp-controller="Message" asp-action="SentMessages" class="mail-nav-item">
+                        <div>
+                            <i class="bi bi-send-fill"></i>
+                            <span>Gönderilenler</span>
+                        </div>
+                    </a>
+                </li>
+                <li>
+                    <a asp-controller="Message" asp-action="Trash" class="mail-nav-item active">
+                        <div>
+                            <i class="bi bi-trash-fill"></i>
+                            <span>Çöp Kutusu</span>
+                        </div>
+                        <span class="mail-nav-badge">@Model.Count</span>
+                    </a>
+                </li>
+            </ul>
+
+            <!-- Çıkış Butonu -->
+            <a asp-controller="Auth" asp-action="Logout" class="btn-logout-premium">
+                <i class="bi bi-box-arrow-right fs-5"></i>
+                <span>Çıkış Yap</span>
+            </a>
+
+        </aside>
+
+        <!-- ================= SAĞ PANEL / MESAJ KUTUSU ================= -->
+        <main class="glass-card mail-main animate-fade-up delay-2">
+
+            <!-- Main Header -->
+            <div class="mail-main-header">
+                <div class="header-title-box">
+                    <h2>
+                        <i class="bi bi-trash3-fill text-danger"></i>
+                        Çöp Kutusu
+                    </h2>
+                    <p>Çöp kutusuna taşınan mesajlar burada listelenir.</p>
+                </div>
+
+                <!-- Modern Arama Kutusu -->
+                <div class="mail-search-box">
+                    <i class="bi bi-search"></i>
+                    <input type="text" id="mailSearchInput" placeholder="Mesajlarda ara..." onkeyup="filterMailRows()">
+                </div>
+
+                <span class="total-count-pill">@Model.Count Mesaj</span>
+            </div>
+
+            <!-- Mesaj Listesi -->
+            <div class="mail-cards-list" id="mailList">
+                @if (Model.Any())
+                {
+                    @foreach (var item in Model)
+                    {
+                        <div class="mail-card-row animate-fade-up delay-3" data-search="@($"{item.Receiver.FirstName} {item.Receiver.LastName} {item.Receiver.Email} {item.Subject}".ToLower())">
+
+                            <!-- Yıldız Butonu -->
+                            <button type="button"
+                                    class="star-btn @(item.IsStarred ? "starred" : "")"
+                                    title="@(item.IsStarred ? "Yıldızı kaldır" : "Yıldızla")"
+                                    onclick="toggleStar(this, @item.Id)">
+                                <i class="bi @(item.IsStarred ? "bi-star-fill" : "bi-star")"></i>
+                            </button>
+
+                            <!-- Avatar -->
+                            <div class="row-avatar">
+                                @item.Receiver.FirstName.Substring(0, 1)
+                            </div>
+
+                            <!-- Mesaj Gövdesi -->
+                            <div class="mail-card-body">
+                                <div class="mail-card-header-info">
+                                    <span class="sender-fullname">@item.Receiver.FirstName @item.Receiver.LastName</span>
+                                    <span class="sender-email-text">@item.Receiver.Email</span>
+
+                                    @if (item.IsRead)
+                                    {
+                                        <span class="status-badge read">
+                                            <i class="bi bi-check-circle-fill"></i> Okundu
+                                        </span>
+                                    }
+                                    else
+                                    {
+                                        <span class="status-badge unread">
+                                            <i class="bi bi-eye-slash-fill"></i> Okunmadı
+                                        </span>
+                                    }
+                                </div>
+
+                                <div>
+                                    <span class="mail-subject-pill">
+                                        @item.Subject
+                                    </span>
+                                </div>
+                            </div>
+
+                            <!-- Gönderim Tarihi -->
+                            <div class="mail-date-stamp">
+                                @item.SendDate.ToString("dd.MM.yyyy HH:mm")
+                            </div>
+
+                            <!-- Aksiyon İkonları -->
+                            <div class="mail-action-group">
+                                <a asp-controller="Message"
+                                   asp-action="MailDetail"
+                                   asp-route-id="@item.Id"
+                                   class="action-icon-btn view"
+                                   title="Görüntüle">
+                                    <i class="bi bi-envelope-open"></i>
+                                </a>
+
+                                <a asp-controller="Message"
+                                   asp-action="Restore"
+                                   asp-route-id="@item.Id"
+                                   class="action-icon-btn restore"
+                                   title="Geri Yükle">
+                                    <i class="bi bi-arrow-counterclockwise"></i>
+                                </a>
+                            </div>
+
+                        </div>
+                    }
+                }
+                else
+                {
+                    <div class="mail-empty-state">
+                        <i class="bi bi-trash"></i>
+                        <h5>Çöp kutusu boş.</h5>
+                        <p class="text-muted">Silinen mesajlar burada listelenecektir.</p>
+                    </div>
+                }
+            </div>
+
+        </main>
+
+    </div>
+</div>
+
+<!-- ================= JAVASCRIPT ================= -->
+<script>
+    function filterMailRows() {
+        const query = document.getElementById('mailSearchInput').value.toLowerCase();
+        document.querySelectorAll('#mailList .mail-card-row').forEach(function (row) {
+            const haystack = row.getAttribute('data-search') || '';
+            row.style.display = haystack.includes(query) ? '' : 'none';
+        });
+    }
+
+    function toggleStar(btn, messageId) {
+        const icon = btn.querySelector('i');
+        const isNowStarred = !btn.classList.contains('starred');
+
+        btn.classList.toggle('starred', isNowStarred);
+        icon.classList.toggle('bi-star', !isNowStarred);
+        icon.classList.toggle('bi-star-fill', isNowStarred);
+        btn.title = isNowStarred ? 'Yıldızı kaldır' : 'Yıldızla';
+
+        fetch(`/Message/ToggleStar/${messageId}`, { method: 'POST' })
+            .catch(function () {
+                btn.classList.toggle('starred', !isNowStarred);
+                icon.classList.toggle('bi-star', isNowStarred);
+                icon.classList.toggle('bi-star-fill', !isNowStarred);
+            });
+    }
+</script>

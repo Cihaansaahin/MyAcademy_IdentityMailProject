@@ -24,7 +24,9 @@ namespace IdentityMail.web.Context
 
             base.OnModelCreating(builder);
         }
-        public DbSet<UserMessage> UserMessages { get; set; }
 
+        public DbSet<Category> Categories { get; set; }
+        public DbSet<UserMessage> UserMessages { get; set; }
+      
     }
 }

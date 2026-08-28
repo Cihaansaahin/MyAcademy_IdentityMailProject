@@ -1,37 +1,268 @@
 ﻿@model List<UserMessage>
 @{
-    ViewData["Title"] = "Index";
+    ViewData["Title"] = "Gelen Kutusu";
+    var starredCount = Model.Count(m => m.IsStarred);
 }
-<h1>Merhaba, @ViewBag.fullName</h1>
+<!-- Bootstrap Icons & Google Fonts (Poppins) -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
 
-<h3>Gelen Mesajlar</h3>
+<style>
+    * {
+        font-family: 'Poppins', sans-serif;
+    }
 
-<table class="table table-bordered table-hover">
-    <tr>
-        <th>Gönderen Ad Soyad</th>
-        <th>Email</th>
-        <th>Konu</th>
-        <th>Tarih</th>
-        <th>İşlemler</th>
-    </tr>
+    body {
+        background: linear-gradient(135deg, #022c22, #064e3b, #0f766e, #042f2e);
+        min-height: 100vh;
+    }
 
-   
-    
-        @foreach (var item in Model)
-        {
-            <tr>
+    .glass-card {
+        background: rgba(255, 255, 255, 0.85);
+        backdrop-filter: blur(12px);
+        border: 1px solid rgba(255, 255, 255, 0.4);
+        border-radius: 20px;
+        box-shadow: 0 8px 30px rgba(0,0,0,0.1);
+    }
 
-            <td>@(item.Sender?.FirstName ?? "Bilinmiyor") @(item.Sender?.LastName ?? "")</td>
-            <td>@(item.Sender?.Email ?? "Email yok")</td>
-            <td>@item.Subject</td>
-            <td>@item.SendDate.ToLongTimeString()</td>
-                <td>
-                    <a href="#" class="btn btn-outline-info">Mail Görüntüle</a>
-                    <a href="#" class="btn btn-outline-danget">Sil</a>
-                </td>
-            </tr>
+    .mail-row {
+        background: rgba(255, 255, 255, 0.9);
+        border: 1px solid rgba(0, 0, 0, 0.05);
+        border-radius: 14px;
+        transition: transform 0.2s, box-shadow 0.2s;
+    }
+
+        .mail-row:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 15px rgba(0,0,0,0.08);
+            background: #ffffff;
         }
-    
-</table>
 
-<a href="/Message/SendMail" class="btn btn-outline-dark">Yeni Mail Gönder</a>
+    .star-btn {
+        border: none;
+        background: transparent;
+        color: #cbd5e1;
+        cursor: pointer;
+        font-size: 1.2rem;
+    }
+
+        .star-btn.starred {
+            color: #f59e0b;
+        }
+
+    .nav-link-custom {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 10px 14px;
+        border-radius: 12px;
+        color: #334155;
+        text-decoration: none;
+        font-weight: 500;
+        transition: 0.2s;
+    }
+
+        .nav-link-custom:hover, .nav-link-custom.active {
+            background: #059669;
+            color: #ffffff;
+        }
+
+            .nav-link-custom:hover i, .nav-link-custom.active i {
+                color: #ffffff;
+            }
+</style>
+
+<div class="container-fluid py-4 px-lg-5">
+    <div class="row g-4">
+
+        <!-- SOL PANEL (SIDEBAR) -->
+        <aside class="col-lg-3">
+            <div class="glass-card p-3 d-flex flex-column gap-3">
+                <!-- Profil Bilgisi -->
+                <div class="d-flex align-items-center gap-3 p-2 bg-white rounded-3 border">
+                    <div class="rounded-circle bg-success text-white d-flex align-items-center justify-content-center fw-bold fs-5 flex-shrink-0" style="width: 45px; height: 45px;">
+                        @(ViewBag.fullName != null ? ViewBag.fullName.ToString().Substring(0, 1) : "U")
+                    </div>
+                    <div class="overflow-hidden flex-grow-1">
+                        <h6 class="mb-0 text-truncate">@ViewBag.fullName</h6>
+                        <small class="text-muted d-block">Hoş Geldiniz</small>
+                        <a asp-controller="Profile" asp-action="Index" class="btn btn-xs btn-outline-success rounded-pill mt-1" style="font-size: 0.75rem; padding: 2px 8px;">
+                            <i class="bi bi-person-gear-fill me-1"></i> Düzenle
+                        </a>
+                    </div>
+                </div>
+
+                <!-- Yeni Mesaj Butonu -->
+                <a asp-controller="Message" asp-action="SendMail" class="btn btn-success rounded-pill py-2 fw-semibold">
+                    <i class="bi bi-plus-lg me-1"></i> Yeni Mesaj
+                </a>
+
+                <!-- Menü -->
+                <nav class="d-flex flex-column gap-1">
+                    <a asp-controller="Message" asp-action="Index" class="nav-link-custom active">
+                        <div><i class="bi bi-inbox-fill me-2"></i> Gelen Kutusu</div>
+                        <span class="badge bg-light text-dark rounded-pill">@Model.Count</span>
+                    </a>
+                    <a asp-controller="Message" asp-action="StarredMessages" class="nav-link-custom">
+                        <div><i class="bi bi-star-fill me-2"></i> Yıldızlı</div>
+                    </a>
+                    <a asp-controller="Message" asp-action="SentMessages" class="nav-link-custom">
+                        <div><i class="bi bi-send-fill me-2"></i> Gönderilenler</div>
+                    </a>
+                    <a asp-controller="Message" asp-action="Trash" class="nav-link-custom text-danger">
+                        <div><i class="bi bi-trash-fill me-2"></i> Çöp Kutusu</div>
+                    </a>
+                </nav>
+
+                <!-- Çıkış -->
+                <a asp-controller="Auth" asp-action="Logout" class="btn btn-outline-danger btn-sm rounded-pill mt-3">
+                    <i class="bi bi-box-arrow-right me-1"></i> Çıkış Yap
+                </a>
+            </div>
+        </aside>
+
+        <!-- SAĞ PANEL (MESAJ LİSTESİ) -->
+        <main class="col-lg-9">
+            <div class="glass-card p-4">
+
+                <!-- Başlık ve Arama -->
+                <div class="d-flex flex-wrap justify-content-between align-items-center gap-3 pb-3 mb-3 border-bottom">
+                    <div>
+                        <h4 class="mb-0 fw-bold"><i class="bi bi-envelope-open-fill text-success me-2"></i>Gelen Kutusu</h4>
+                        <small class="text-muted">Gelen tüm mailler burada listelenir.</small>
+                    </div>
+                    <div class="flex-grow-1" style="max-width: 350px;">
+                        <div class="input-group">
+                            <span class="input-group-text bg-white border-end-0 rounded-start-pill"><i class="bi bi-search"></i></span>
+                            <input type="text" id="mailSearchInput" class="form-control border-start-0 rounded-end-pill" placeholder="Mesajlarda ara..." onkeyup="filterMailRows()">
+                        </div>
+                    </div>
+                    <span class="badge bg-success rounded-pill px-3 py-2">@Model.Count Mesaj</span>
+                </div>
+
+                <!-- Filtreler, Kategori & Sıralama -->
+                <div class="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-3">
+                    <div class="btn-group btn-group-sm" role="group">
+                        <a asp-controller="Message" asp-action="Index" class="btn btn-outline-secondary">Tümü</a>
+                        <a asp-controller="Message" asp-action="Index" asp-route-filter="read" class="btn btn-outline-secondary">Okunan</a>
+                        <a asp-controller="Message" asp-action="Index" asp-route-filter="unread" class="btn btn-outline-secondary">Okunmayan</a>
+                        <a asp-controller="Message" asp-action="Index" asp-route-filter="starred" class="btn btn-outline-secondary">Yıldızlı</a>
+                    </div>
+
+                    <div class="d-flex gap-2 flex-wrap">
+                        <!-- Kategori Dropdown -->
+                        @if (ViewBag.Categories != null)
+                        {
+                            <form asp-controller="Message" asp-action="Index" method="get">
+                                <input type="hidden" name="filter" value="@Context.Request.Query["filter"]" />
+                                <input type="hidden" name="sort" value="@Context.Request.Query["sort"]" />
+                                <select name="categoryId" class="form-select form-select-sm rounded-pill" onchange="this.form.submit()">
+                                    <option value="">📂 Tüm Kategoriler</option>
+                                    @foreach (var item in ViewBag.Categories)
+                                    {
+                                        <option value="@item.Id" selected="@(ViewBag.SelectedCategory != null && (int)ViewBag.SelectedCategory == item.Id)">
+                                            @item.Name
+                                        </option>
+                                    }
+                                </select>
+                            </form>
+                        }
+
+                        <!-- Sıralama Dropdown -->
+                        <form asp-controller="Message" asp-action="Index" method="get">
+                            <input type="hidden" name="filter" value="@Context.Request.Query["filter"]" />
+                            <input type="hidden" name="categoryId" value="@Context.Request.Query["categoryId"]" />
+                            <select name="sort" class="form-select form-select-sm rounded-pill" onchange="this.form.submit()">
+                                <option value="">↕️ Sırala</option>
+                                <option value="new">🕒 En Yeni</option>
+                                <option value="old">📜 En Eski</option>
+                                <option value="az">🔤 A-Z</option>
+                                <option value="za">🔠 Z-A</option>
+                            </select>
+                        </form>
+                    </div>
+                </div>
+
+                <!-- Mesaj Kartları -->
+                <div id="mailList" class="d-flex flex-column gap-2">
+                    @if (Model.Any())
+                    {
+                        @foreach (var item in Model)
+                        {
+                            <div class="mail-row p-3 d-flex align-items-center gap-3" data-search="@($"{item.Sender.FirstName} {item.Sender.LastName} {item.Sender.Email} {item.Subject}".ToLower())">
+
+                                <button type="button" class="star-btn @(item.IsStarred ? "starred" : "")" onclick="toggleStar(this, @item.Id)">
+                                    <i class="bi @(item.IsStarred ? "bi-star-fill" : "bi-star")"></i>
+                                </button>
+
+                                <div class="rounded-circle bg-light text-dark fw-bold d-flex align-items-center justify-content-center border flex-shrink-0" style="width: 38px; height: 38px;">
+                                    @item.Sender.FirstName.Substring(0, 1)
+                                </div>
+
+                                <div class="flex-grow-1 min-w-0">
+                                    <div class="d-flex align-items-center gap-2 flex-wrap">
+                                        <strong class="text-truncate">@item.Sender.FirstName @item.Sender.LastName</strong>
+                                        <small class="text-muted">(@item.Sender.Email)</small>
+                                        @if (item.IsRead)
+                                        {
+                                            <span class="badge bg-success-subtle text-success border border-success-subtle rounded-pill">Okundu</span>
+                                        }
+                                        else
+                                        {
+                                            <span class="badge bg-warning-subtle text-warning border border-warning-subtle rounded-pill">Okunmadı</span>
+                                        }
+                                    </div>
+                                    <div class="text-truncate text-secondary small mt-1">
+                                        <strong>@item.Subject</strong> - @(item.Body?.Length > 50 ? item.Body.Substring(0, 50) + "..." : item.Body)
+                                    </div>
+                                </div>
+
+                                <div class="text-muted small text-nowrap">
+                                    @item.SendDate.ToString("dd.MM.yyyy HH:mm")
+                                </div>
+
+                                <div class="d-flex gap-1 flex-shrink-0">
+                                    <a asp-controller="Message" asp-action="MailDetail" asp-route-id="@item.Id" class="btn btn-sm btn-light border" title="Görüntüle">
+                                        <i class="bi bi-envelope-open"></i>
+                                    </a>
+                                    <a asp-controller="Message" asp-action="MoveToTrash" asp-route-id="@item.Id" class="btn btn-sm btn-outline-danger border" title="Çöp Kutusu">
+                                        <i class="bi bi-trash"></i>
+                                    </a>
+                                </div>
+                            </div>
+                        }
+                    }
+                    else
+                    {
+                        <div class="text-center py-5 text-muted">
+                            <i class="bi bi-inbox fs-1 d-block mb-2"></i>
+                            <h6>Henüz mesaj bulunmuyor.</h6>
+                        </div>
+                    }
+                </div>
+
+            </div>
+        </main>
+    </div>
+</div>
+
+<script>
+    function filterMailRows() {
+        const query = document.getElementById('mailSearchInput').value.toLowerCase();
+        document.querySelectorAll('#mailList .mail-row').forEach(function (row) {
+            const text = row.getAttribute('data-search') || '';
+            row.style.display = text.includes(query) ? '' : 'none';
+        });
+    }
+
+    function toggleStar(btn, messageId) {
+        const icon = btn.querySelector('i');
+        const isNowStarred = !btn.classList.contains('starred');
+
+        btn.classList.toggle('starred', isNowStarred);
+        icon.classList.toggle('bi-star', !isNowStarred);
+        icon.classList.toggle('bi-star-fill', isNowStarred);
+
+        fetch(`/Message/ToggleStar/${messageId}`, { method: 'POST' });
+    }
+</script>
