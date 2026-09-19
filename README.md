@@ -1,54 +1,53 @@
 # IdentityMail
 
-IdentityMail, ASP.NET Core (.NET 10) ile geliştirilen, kurumsal düzeyde kullanıcı kimlik doğrulama, rol yönetimi ve e‑posta/messaging işlevleri sağlayan bir uygulamadır. Eğitim amaçlı tasarlanmış olup, güvenli ve genişletilebilir bir mimari sunar.
+[![.NET](https://img.shields.io/badge/.NET-10-blue)](https://dotnet.microsoft.com/)
+
+IdentityMail; ASP.NET Core (.NET 10, Razor) ile geliştirilmiş, kullanıcı kimlik doğrulama, rol yönetimi ve e‑posta/messaging işlevleri sunan hafif, üretime yakın bir örnek uygulamadır.
 
 ## Özellikler
-- Kullanıcı kayıt / giriş (ASP.NET Core Identity)
+- Kullanıcı kayıt ve giriş (ASP.NET Core Identity)
 - Rol tabanlı yetkilendirme (Admin / User)
-- Mesaj gönderme / alma, Gelen/Giden kutusu
-- Çöp kutusu, geri yükleme, yıldızlama, okundu/okunmadı durumu
+- Mesaj gönderme / alma, gelen/giden kutusu
+- Çöp kutusu ve geri yükleme
+- Yıldızlama, okundu/okunmadı takibi
 - Mesaj kategorileri, filtreleme ve sıralama
-- Profil yönetimi
-- Admin dashboard: kullanıcı ve rol yönetimi, istatistikler
-- Responsive UI (Bootstrap 5)
+- Profil yönetimi ve admin dashboard
 
 ## Teknolojiler
 - .NET 10
-- ASP.NET Core (Razor Pages / MVC)
-- ASP.NET Core Identity
-- Entity Framework Core (Code First & Migrations)
-- SQL Server (localdb veya tam sürüm)
- - Razor View Engine, Bootstrap 5, HTML5, CSS3, JavaScript, LINQ
+- ASP.NET Core (Razor)
+- Entity Framework Core (Code First)
+- SQL Server / LocalDB
+- Bootstrap 5, Razor Views, JavaScript
 
-## Ekran görüntüleri
-Resimler proje içindeki `IdentityMail.web/Img` klasöründe yer alıyor. Aşağıda bulunan örnekler repoda mevcut dosya adlarına göre ayarlanmıştır:
+## Kurulum
+1. Depoyu klonlayın:
 
-```
-![Admin Panel](./IdentityMail.web/Img/AdminPanel.png)
-![Gelen Kutusu](./IdentityMail.web/Img/GelenKutu.png)
-![Çöp Kutusu](./IdentityMail.web/Img/CopKutusu.png)
-![Yeni Mesaj](./IdentityMail.web/Img/YeniMessage.png)
-![Gönderilen Mesaj](./IdentityMail.web/Img/SendMessage.png)
-![Kayıt Olma Ekranı](./IdentityMail.web/Img/KayitOl.png)
-![Giriş Ekranı](./IdentityMail.web/Img/Login.png)
-![Şifremi Unuttum](./IdentityMail.web/Img/Unuttum.png)
-![Yıldızlı Mesaj](./IdentityMail.web/Img/YıldızlıMessge.png)
-```
+   git clone https://github.com/Cihaansaahin/MyAcademy_IdentityMailProject.git
 
-Not: Eğer `Img` klasörü farklı bir yerdeyse (ör. `wwwroot/Img`), yolları buna göre güncelleyin. Görsellerin GitHub üzerinde görünmemesi durumunda dosya isimlerinin büyük/küçük harf uyumunu, dosyaların commit edilip push edildiğini ve README'nin aynı dalda (branch) olduğunu doğrulayın.
+2. `IdentityMail.web/appsettings.json` içindeki `DefaultConnection` değerini güncelleyin.
 
+3. Migration uygulayın:
 
-## Geliştirme notları
-- Proje .NET 10 hedeflidir; VS 2026 ile uyumludur.
-- Razor Pages içeren kısımlara öncelik verilmiştir.
-- Identity seed ve rol oluşturma `Program.cs` içinde yapılmıştır; üretim ortamı için başlangıç kullanıcı/rol oluşturma mantığını konfigüre edin veya migration/seed script kullanın.
+   dotnet ef database update --project IdentityMail.web
+
+4. Uygulamayı çalıştırın:
+
+   dotnet run --project IdentityMail.web
+
+## Ekran Görüntüleri
+![Admin Panel](https://raw.githubusercontent.com/Cihaansaahin/MyAcademy_IdentityMailProject/master/IdentityMail.web/Img/AdminPanel.png)
+![Gelen Kutusu](https://raw.githubusercontent.com/Cihaansaahin/MyAcademy_IdentityMailProject/master/IdentityMail.web/Img/GelenKutu.png)
+![Çöp Kutusu](https://raw.githubusercontent.com/Cihaansaahin/MyAcademy_IdentityMailProject/master/IdentityMail.web/Img/CopKutusu.png)
+![Yeni Mesaj](https://raw.githubusercontent.com/Cihaansaahin/MyAcademy_IdentityMailProject/master/IdentityMail.web/Img/YeniMessage.png)
+![Gönderilen Mesaj](https://raw.githubusercontent.com/Cihaansaahin/MyAcademy_IdentityMailProject/master/IdentityMail.web/Img/SendMessage.png)
+![Kayıt Olma Ekranı](https://raw.githubusercontent.com/Cihaansaahin/MyAcademy_IdentityMailProject/master/IdentityMail.web/Img/KayitOl.png)
+![Giriş Ekranı](https://raw.githubusercontent.com/Cihaansaahin/MyAcademy_IdentityMailProject/master/IdentityMail.web/Img/Login.png)
+![Şifremi Unuttum](https://raw.githubusercontent.com/Cihaansaahin/MyAcademy_IdentityMailProject/master/IdentityMail.web/Img/Unuttum.png)
+![Yıldızlı Mesaj](https://raw.githubusercontent.com/Cihaansaahin/MyAcademy_IdentityMailProject/master/IdentityMail.web/Img/YıldızlıMessge.png)
 
 ## Katkıda bulunma
-Pull request kabul edilir. Küçük değişiklikler için issue açabilirsiniz.
+Forklayın ve PR gönderin. Değişiklik açıklamalarında yaptıklarınızı belirtin.
 
 ## Lisans
-Proje lisansı belirtilmemiştir. Eğitim ve kişisel kullanım amaçlı olduğu kabul edilebilir; açık kaynak lisansı eklemek isterseniz `LICENSE` dosyası ekleyin.
-
----
-
-Hazırlayan: Cihaan Şahin — MyAcademy_IdentityMailProject (.NET 10)
+Lisans belirtilmemiştir. Gerekirse `LICENSE` ekleyin.
