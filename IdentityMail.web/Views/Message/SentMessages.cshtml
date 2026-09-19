@@ -649,6 +649,29 @@
             transform: translateX(0);
         }
     }
+
+    /* 1. Layout'tan gelen sayfa sınırlandırmasını tam genişliğe zorla */
+    .container,
+    .container-fluid,
+    main[role="main"] {
+        max-width: 100% !important;
+        padding: 0 !important;
+        margin: 0 !important;
+        width: 100% !important;
+    }
+
+    /* 2. Dış kapsayıcının ekranın tamamını kaplamasını sağla */
+    .mail-shell {
+        min-height: 100vh;
+        width: 100vw;
+        margin: 0;
+        padding: 40px 20px;
+        background: linear-gradient(-45deg, #022c22, #064e3b, #0f766e, #042f2e);
+        background-size: 400% 400%;
+        animation: gradientBG 15s ease infinite;
+        display: flex;
+        justify-content: center;
+        align-items: center;
 </style>
 
 <div class="mail-shell">

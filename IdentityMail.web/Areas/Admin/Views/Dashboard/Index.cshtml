@@ -1,0 +1,615 @@
+﻿@using IdentityMail.web.Areas.Admin.Models
+@model DashboardViewModel
+
+@{
+    ViewData["Title"] = "Admin Dashboard";
+}
+
+<!-- Bootstrap Icons & Google Fonts (Poppins) -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+
+<style>
+    /* ========== THEME & TYPOGRAPHY ========== */
+    * {
+        font-family: 'Poppins', sans-serif;
+    }
+
+    :root {
+        --brand-1: #022c22;
+        --brand-2: #064e3b;
+        --brand-3: #059669;
+        --brand-4: #10b981;
+        --brand-5: #06b6d4;
+        --text-main: #0f172a;
+        --text-muted: #64748b;
+    }
+
+    .admin-viewport {
+        min-height: 100vh;
+        width: 100%;
+        background: linear-gradient(-45deg, #022c22, #064e3b, #0f766e, #042f2e);
+        background-size: 400% 400%;
+        animation: gradientBG 15s ease infinite;
+        padding: 40px 24px;
+        display: flex;
+        justify-content: center;
+        align-items: flex-start;
+    }
+
+    @@keyframes gradientBG {
+        0% {
+            background-position: 0% 50%;
+        }
+
+        50% {
+            background-position: 100% 50%;
+        }
+
+        100% {
+            background-position: 0% 50%;
+        }
+    }
+
+    /* Asıl Shell / Panel */
+    .admin-frame {
+        width: 100%;
+        max-width: 1320px;
+        background: rgba(255, 255, 255, 0.88);
+        backdrop-filter: blur(20px);
+        -webkit-backdrop-filter: blur(20px);
+        border: 1px solid rgba(255, 255, 255, 0.5);
+        border-radius: 28px;
+        box-shadow: 0 25px 60px rgba(2, 44, 34, 0.35);
+        padding: 36px;
+    }
+
+    /* Üst Konsol Barı */
+    .admin-console-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 20px;
+        padding-bottom: 24px;
+        margin-bottom: 32px;
+        border-bottom: 1px solid rgba(226, 232, 240, 0.8);
+        flex-wrap: wrap;
+    }
+
+    .header-badge-title {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        font-size: 0.75rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.8px;
+        color: var(--brand-3);
+        background: rgba(16, 185, 129, 0.12);
+        padding: 4px 12px;
+        border-radius: 20px;
+        margin-bottom: 8px;
+    }
+
+    .main-title {
+        font-weight: 800;
+        font-size: 1.65rem;
+        color: var(--text-main);
+        margin: 0;
+        line-height: 1.2;
+    }
+
+    .main-desc {
+        font-size: 0.88rem;
+        color: var(--text-muted);
+        margin: 6px 0 0 0;
+        font-weight: 400;
+    }
+
+    .btn-action-glass {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        padding: 11px 22px;
+        border-radius: 14px;
+        font-size: 0.9rem;
+        font-weight: 600;
+        color: var(--text-main);
+        background: #ffffff;
+        border: 1px solid rgba(0, 0, 0, 0.08);
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.04);
+        text-decoration: none;
+        transition: all 0.25s ease;
+    }
+
+        .btn-action-glass:hover {
+            transform: translateY(-2px);
+            color: var(--brand-3);
+            border-color: rgba(5, 150, 105, 0.3);
+            box-shadow: 0 8px 20px rgba(5, 150, 105, 0.15);
+        }
+
+    /* Asimetrik Bento Metrik Kartları */
+    .bento-metrics-grid {
+        display: grid;
+        grid-template-columns: repeat(12, 1fr);
+        gap: 18px;
+        margin-bottom: 32px;
+    }
+
+    .bento-card {
+        background: #ffffff;
+        border: 1px solid rgba(0, 0, 0, 0.05);
+        border-radius: 20px;
+        padding: 22px;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        position: relative;
+        overflow: hidden;
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.03);
+    }
+
+        .bento-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 12px 30px rgba(2, 44, 34, 0.1);
+            border-color: rgba(5, 150, 105, 0.25);
+        }
+
+    .bento-span-3 {
+        grid-column: span 3;
+    }
+
+    .bento-span-2 {
+        grid-column: span 2;
+    }
+
+    .bento-span-4 {
+        grid-column: span 4;
+    }
+
+    .metric-icon-circle {
+        width: 46px;
+        height: 46px;
+        border-radius: 14px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.25rem;
+        margin-bottom: 16px;
+    }
+
+    .icon-emerald {
+        background: linear-gradient(135deg, #10b981, #06b6d4);
+        color: #ffffff;
+        box-shadow: 0 6px 16px rgba(16, 185, 129, 0.25);
+    }
+
+    .icon-forest {
+        background: linear-gradient(135deg, #059669, #022c22);
+        color: #ffffff;
+        box-shadow: 0 6px 16px rgba(5, 150, 105, 0.25);
+    }
+
+    .icon-amber {
+        background: linear-gradient(135deg, #f59e0b, #d97706);
+        color: #ffffff;
+        box-shadow: 0 6px 16px rgba(245, 158, 11, 0.25);
+    }
+
+    .icon-rose {
+        background: linear-gradient(135deg, #ef4444, #b91c1c);
+        color: #ffffff;
+        box-shadow: 0 6px 16px rgba(239, 68, 68, 0.25);
+    }
+
+    .bento-val {
+        font-weight: 800;
+        font-size: 2rem;
+        color: var(--text-main);
+        line-height: 1;
+        letter-spacing: -0.5px;
+    }
+
+    .bento-label {
+        font-size: 0.8rem;
+        font-weight: 600;
+        color: var(--text-muted);
+        margin-top: 6px;
+    }
+
+    /* Profil Paneli (Çift Kolon Yapı) */
+    .profile-dashboard-layout {
+        display: grid;
+        grid-template-columns: 320px 1fr;
+        gap: 24px;
+        align-items: stretch;
+    }
+
+    .profile-badge-column {
+        background: #ffffff;
+        border: 1px solid rgba(0, 0, 0, 0.05);
+        border-radius: 22px;
+        padding: 32px 24px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        text-align: center;
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.03);
+    }
+
+    .avatar-outer-ring {
+        position: relative;
+        padding: 6px;
+        border-radius: 50%;
+        background: linear-gradient(135deg, #10b981, #06b6d4);
+        box-shadow: 0 10px 25px rgba(16, 185, 129, 0.28);
+        margin-bottom: 18px;
+    }
+
+    .profile-avatar-display {
+        width: 110px;
+        height: 110px;
+        border-radius: 50%;
+        object-fit: cover;
+        border: 3px solid #ffffff;
+        background-color: #f8fafc;
+        display: block;
+    }
+
+    .profile-role-tag {
+        display: inline-block;
+        font-size: 0.75rem;
+        font-weight: 700;
+        letter-spacing: 0.5px;
+        color: #059669;
+        background: rgba(16, 185, 129, 0.12);
+        padding: 3px 12px;
+        border-radius: 20px;
+        margin-top: 6px;
+    }
+
+    .profile-form-column {
+        background: #ffffff;
+        border: 1px solid rgba(0, 0, 0, 0.05);
+        border-radius: 22px;
+        padding: 32px;
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.03);
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+    }
+
+    /* Form Giriş Elemanları */
+    .field-caption {
+        font-weight: 700;
+        font-size: 0.85rem;
+        color: #334155;
+        margin-bottom: 6px;
+        display: block;
+    }
+
+    .input-shell {
+        position: relative;
+        display: flex;
+        align-items: center;
+        margin-bottom: 18px;
+    }
+
+        .input-shell i {
+            position: absolute;
+            left: 16px;
+            color: var(--text-muted);
+            font-size: 1.1rem;
+            pointer-events: none;
+            transition: color 0.2s;
+        }
+
+    .input-box {
+        width: 100%;
+        background: #f8fafc;
+        border: 1px solid #e2e8f0;
+        border-radius: 14px;
+        padding: 12px 16px 12px 46px;
+        font-size: 0.92rem;
+        font-weight: 500;
+        color: var(--text-main);
+        outline: none;
+        transition: all 0.25s ease;
+    }
+
+        .input-box:focus {
+            background: #ffffff;
+            border-color: #059669;
+            box-shadow: 0 0 0 3px rgba(5, 150, 105, 0.15);
+        }
+
+        .input-box[readonly] {
+            background: #f1f5f9;
+            color: #94a3b8;
+            cursor: not-allowed;
+            border-color: #e2e8f0;
+        }
+
+    .input-shell:focus-within i {
+        color: #059669;
+    }
+
+    /* Butonlar */
+    .btn-brand-submit {
+        background: linear-gradient(135deg, #059669, #0891b2);
+        color: #ffffff;
+        font-weight: 700;
+        font-size: 0.95rem;
+        border: none;
+        border-radius: 14px;
+        padding: 13px 28px;
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        box-shadow: 0 6px 20px rgba(16, 185, 129, 0.35);
+        transition: all 0.25s ease;
+        cursor: pointer;
+    }
+
+        .btn-brand-submit:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 24px rgba(16, 185, 129, 0.45);
+            color: #ffffff;
+        }
+
+    .btn-outline-danger-subtle {
+        background: rgba(254, 242, 242, 0.8);
+        border: 1px solid rgba(239, 68, 68, 0.2);
+        color: #ef4444;
+        font-weight: 700;
+        font-size: 0.9rem;
+        border-radius: 14px;
+        padding: 12px 22px;
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        text-decoration: none;
+        transition: all 0.25s ease;
+    }
+
+        .btn-outline-danger-subtle:hover {
+            background: #ef4444;
+            color: #ffffff;
+            box-shadow: 0 4px 15px rgba(239, 68, 68, 0.3);
+            transform: translateY(-2px);
+        }
+
+    /* ========== RESPONSIVE ========== */
+    @@media (max-width: 1200px) {
+        .bento-metrics-grid {
+            grid-template-columns: repeat(2, 1fr);
+        }
+
+        .bento-span-3, .bento-span-2, .bento-span-4 {
+            grid-column: span 1;
+        }
+    }
+
+    @@media (max-width: 992px) {
+        .profile-dashboard-layout {
+            grid-template-columns: 1fr;
+        }
+    }
+
+    @@media (max-width: 768px) {
+        .admin-viewport {
+            padding: 16px 8px;
+        }
+
+        .admin-frame {
+            padding: 20px;
+            border-radius: 20px;
+        }
+
+        .bento-metrics-grid {
+            grid-template-columns: 1fr;
+        }
+
+        .admin-console-header {
+            flex-direction: column;
+            align-items: flex-start;
+        }
+    }
+</style>
+
+<div class="admin-viewport">
+    <div class="admin-frame">
+
+        <!-- Header / Navigasyon Konsolu -->
+        <header class="admin-console-header">
+            <div>
+                <span class="header-badge-title">
+                    <i class="bi bi-shield-check"></i> Sistem Yönetim Paneli
+                </span>
+                <h1 class="main-title">Genel Durum & İstatistikler</h1>
+                <p class="main-desc">Sistem içi gerçek zamanlı mail trafiği ve idari ayarlar.</p>
+            </div>
+
+            <div class="d-flex align-items-center gap-2 flex-wrap">
+                <a href="/Admin/User/Index" class="btn-action-glass">
+                    <i class="bi bi-people text-success"></i>
+                    <span>Kullanıcı Yönetimi</span>
+                </a>
+                <a asp-controller="Message" asp-action="Index" class="btn-action-glass">
+                    <i class="bi bi-inbox text-primary"></i>
+                    <span>Gelen Kutusu</span>
+                </a>
+            </div>
+        </header>
+
+        <!-- Bento Metrik Kartları -->
+        <section class="bento-metrics-grid">
+
+            <div class="bento-card bento-span-3">
+                <div class="metric-icon-circle icon-emerald">
+                    <i class="bi bi-people-fill"></i>
+                </div>
+                <div>
+                    <div class="bento-val">@Model.TotalUsers</div>
+                    <div class="bento-label">Toplam Kullanıcı</div>
+                </div>
+            </div>
+
+            <div class="bento-card bento-span-3">
+                <div class="metric-icon-circle icon-forest">
+                    <i class="bi bi-envelope-fill"></i>
+                </div>
+                <div>
+                    <div class="bento-val">@Model.TotalMessages</div>
+                    <div class="bento-label">Toplam Mesaj</div>
+                </div>
+            </div>
+
+            <div class="bento-card bento-span-2">
+                <div class="metric-icon-circle icon-emerald">
+                    <i class="bi bi-calendar2-check-fill"></i>
+                </div>
+                <div>
+                    <div class="bento-val">@Model.TodayMessages</div>
+                    <div class="bento-label">Bugün Gönderilen</div>
+                </div>
+            </div>
+
+            <div class="bento-card bento-span-2">
+                <div class="metric-icon-circle icon-amber">
+                    <i class="bi bi-envelope-exclamation-fill"></i>
+                </div>
+                <div>
+                    <div class="bento-val">@Model.UnreadMessages</div>
+                    <div class="bento-label">Okunmamış</div>
+                </div>
+            </div>
+
+            <div class="bento-card bento-span-2">
+                <div class="metric-icon-circle icon-rose">
+                    <i class="bi bi-trash3-fill"></i>
+                </div>
+                <div>
+                    <div class="bento-val">@Model.TrashMessages</div>
+                    <div class="bento-label">Çöp Kutusu</div>
+                </div>
+            </div>
+
+        </section>
+
+        <!-- Profil & Ayarlar Bölümü -->
+        <section class="profile-dashboard-layout">
+
+            <!-- Sol Profil Rozet Kartı -->
+            <div class="profile-badge-column">
+                <div class="avatar-outer-ring">
+                    @if (ViewBag.ProfileImageUrl != null && !string.IsNullOrEmpty(ViewBag.ProfileImageUrl.ToString()))
+                    {
+                        <img src="@ViewBag.ProfileImageUrl" alt="Admin Avatar" class="profile-avatar-display" />
+                    }
+                    else
+                    {
+                        <img src="https://resmim.net/cdn/2026/09/19/E95vxQ.jpg" alt="Admin Avatar" class="profile-avatar-display" />
+                    }
+                </div>
+                <h5 style="font-weight: 700; color: #0f172a; margin-bottom: 2px;">@(ViewBag.FirstName ?? "Admin") @(ViewBag.LastName ?? "")</h5>
+                <small style="color: #64748b; font-size: 0.8rem;">@(ViewBag.Email ?? "admin@identitymail.com")</small>
+                <span class="profile-role-tag">Süper Yetkili</span>
+
+                <div class="w-100 border-top mt-4 pt-3 text-start">
+                    <small class="text-muted d-block fw-semibold" style="font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.5px;">Kullanıcı Adı</small>
+                    <span style="font-weight: 600; font-size: 0.85rem; color: #1e293b;">@@@(ViewBag.UserName ?? "admin")</span>
+                </div>
+            </div>
+
+            <!-- Sağ Form Düzenleme Kartı -->
+            <div class="profile-form-column">
+
+                <div>
+                    <div class="d-flex align-items-center justify-content-between mb-4">
+                        <div class="d-flex align-items-center gap-2">
+                            <i class="bi bi-person-gear fs-4" style="color: #059669;"></i>
+                            <h4 class="mb-0" style="font-weight: 700; font-size: 1.25rem; color: #0f172a;">Profil Bilgilerini Düzenle</h4>
+                        </div>
+                        <span class="badge rounded-pill" style="font-size: 0.72rem; font-weight: 700; padding: 5px 12px; background: rgba(16, 185, 129, 0.12); color: #059669;">Canlı Profil</span>
+                    </div>
+
+                    @if (TempData["Success"] != null)
+                    {
+                        <div class="alert alert-success rounded-4 border-0 shadow-sm mb-4 d-flex align-items-center gap-2" style="font-size: 0.9rem; font-weight: 500;">
+                            <i class="bi bi-check-circle-fill text-success fs-5"></i>
+                            <span>@TempData["Success"]</span>
+                        </div>
+                    }
+
+                    <form action="/Admin/UpdateProfile" method="post">
+
+                        <div class="row g-3">
+                            <div class="col-md-6">
+                                <label class="field-caption">Ad</label>
+                                <div class="input-shell">
+                                    <i class="bi bi-person"></i>
+                                    <input name="FirstName" value="@ViewBag.FirstName" class="input-box" placeholder="Admin Adı" />
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="field-caption">Soyad</label>
+                                <div class="input-shell">
+                                    <i class="bi bi-person"></i>
+                                    <input name="LastName" value="@ViewBag.LastName" class="input-box" placeholder="Admin Soyadı" />
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row g-3">
+                            <div class="col-md-6">
+                                <label class="field-caption">E-Posta (Salt Okunur)</label>
+                                <div class="input-shell">
+                                    <i class="bi bi-envelope"></i>
+                                    <input name="Email" value="@ViewBag.Email" class="input-box" readonly />
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="field-caption">Kullanıcı Adı (Salt Okunur)</label>
+                                <div class="input-shell">
+                                    <i class="bi bi-at"></i>
+                                    <input name="UserName" value="@ViewBag.UserName" class="input-box" readonly />
+                                </div>
+                            </div>
+                        </div>
+
+                        <div>
+                            <label class="field-caption">Profil Görseli URL</label>
+                            <div class="input-shell">
+                                <i class="bi bi-link-45deg"></i>
+                                <input name="ProfileImageUrl" value="@ViewBag.ProfileImageUrl" class="input-box" placeholder="https://..." />
+                            </div>
+                        </div>
+
+                        <div class="d-flex align-items-center justify-content-between mt-4 pt-2 flex-wrap gap-3 border-top">
+                            <a asp-area="" asp-controller="Security" asp-action="ChangePassword" class="btn-outline-danger-subtle">
+                                <i class="bi bi-shield-lock-fill"></i>
+                                <span>Şifre Değiştir</span>
+                            </a>
+
+                            <button type="submit" class="btn-brand-submit">
+                                <i class="bi bi-check2-circle fs-5"></i>
+                                <span>Bilgileri Güncelle</span>
+                            </button>
+                        </div>
+
+                    </form>
+                </div>
+
+            </div>
+
+        </section>
+
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

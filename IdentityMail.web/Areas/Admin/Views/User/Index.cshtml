@@ -1,0 +1,463 @@
+﻿@using IdentityMail.web.Entities
+@model List<AppUser>
+
+@{
+    ViewData["Title"] = "Kullanıcı Yönetimi";
+}
+
+<!-- Bootstrap Icons & Google Fonts (Poppins) -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+
+<style>
+    /* ========== THEME & TYPOGRAPHY ========== */
+    * {
+        font-family: 'Poppins', sans-serif;
+    }
+
+    :root {
+        --brand-1: #022c22;
+        --brand-2: #064e3b;
+        --brand-3: #059669;
+        --brand-4: #10b981;
+        --brand-5: #06b6d4;
+        --text-main: #0f172a;
+        --text-muted: #64748b;
+    }
+
+    .admin-viewport {
+        min-height: 100vh;
+        width: 100%;
+        background: linear-gradient(-45deg, #022c22, #064e3b, #0f766e, #042f2e);
+        background-size: 400% 400%;
+        animation: gradientBG 15s ease infinite;
+        padding: 40px 24px;
+        display: flex;
+        justify-content: center;
+        align-items: flex-start;
+    }
+
+    @@keyframes gradientBG {
+        0% {
+            background-position: 0% 50%;
+        }
+
+        50% {
+            background-position: 100% 50%;
+        }
+
+        100% {
+            background-position: 0% 50%;
+        }
+    }
+
+    /* Asıl Frame */
+    .admin-frame {
+        width: 100%;
+        max-width: 1320px;
+        background: rgba(255, 255, 255, 0.88);
+        backdrop-filter: blur(20px);
+        -webkit-backdrop-filter: blur(20px);
+        border: 1px solid rgba(255, 255, 255, 0.5);
+        border-radius: 28px;
+        box-shadow: 0 25px 60px rgba(2, 44, 34, 0.35);
+        padding: 36px;
+    }
+
+    /* Üst Konsol Barı */
+    .admin-console-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 20px;
+        padding-bottom: 24px;
+        margin-bottom: 28px;
+        border-bottom: 1px solid rgba(226, 232, 240, 0.8);
+        flex-wrap: wrap;
+    }
+
+    .header-badge-title {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        font-size: 0.75rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.8px;
+        color: var(--brand-3);
+        background: rgba(16, 185, 129, 0.12);
+        padding: 4px 12px;
+        border-radius: 20px;
+        margin-bottom: 8px;
+    }
+
+    .main-title {
+        font-weight: 800;
+        font-size: 1.65rem;
+        color: var(--text-main);
+        margin: 0;
+        line-height: 1.2;
+    }
+
+    .main-desc {
+        font-size: 0.88rem;
+        color: var(--text-muted);
+        margin: 6px 0 0 0;
+        font-weight: 400;
+    }
+
+    .btn-action-glass {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        padding: 11px 22px;
+        border-radius: 14px;
+        font-size: 0.9rem;
+        font-weight: 600;
+        color: var(--text-main);
+        background: #ffffff;
+        border: 1px solid rgba(0, 0, 0, 0.08);
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.04);
+        text-decoration: none;
+        transition: all 0.25s ease;
+    }
+
+        .btn-action-glass:hover {
+            transform: translateY(-2px);
+            color: var(--brand-3);
+            border-color: rgba(5, 150, 105, 0.3);
+            box-shadow: 0 8px 20px rgba(5, 150, 105, 0.15);
+        }
+
+    /* Arama Barı */
+    .user-search-wrapper {
+        position: relative;
+        max-width: 360px;
+        width: 100%;
+    }
+
+        .user-search-wrapper i {
+            position: absolute;
+            left: 16px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--text-muted);
+            font-size: 1rem;
+        }
+
+    .user-search-input {
+        width: 100%;
+        background: #ffffff;
+        border: 1px solid #e2e8f0;
+        border-radius: 14px;
+        padding: 11px 16px 11px 44px;
+        font-size: 0.9rem;
+        font-weight: 500;
+        color: var(--text-main);
+        outline: none;
+        transition: all 0.25s ease;
+    }
+
+        .user-search-input:focus {
+            border-color: #059669;
+            box-shadow: 0 0 0 3px rgba(5, 150, 105, 0.15);
+        }
+
+    /* Tablo Yapısı */
+    .table-container-card {
+        background: #ffffff;
+        border: 1px solid rgba(0, 0, 0, 0.05);
+        border-radius: 22px;
+        padding: 18px 24px;
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.03);
+    }
+
+    .custom-admin-table {
+        width: 100%;
+        border-collapse: separate;
+        border-spacing: 0 10px;
+    }
+
+        .custom-admin-table th {
+            color: var(--text-muted);
+            font-weight: 700;
+            font-size: 0.78rem;
+            text-transform: uppercase;
+            letter-spacing: 0.6px;
+            padding: 12px 20px;
+            border: none;
+        }
+
+        .custom-admin-table tbody tr {
+            background: #f8fafc;
+            border: 1px solid #edf2f7;
+            transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+            .custom-admin-table tbody tr td:first-child {
+                border-top-left-radius: 16px;
+                border-bottom-left-radius: 16px;
+            }
+
+            .custom-admin-table tbody tr td:last-child {
+                border-top-right-radius: 16px;
+                border-bottom-right-radius: 16px;
+            }
+
+            .custom-admin-table tbody tr:hover {
+                background: #ffffff;
+                transform: translateY(-2px);
+                box-shadow: 0 8px 24px rgba(2, 44, 34, 0.08);
+            }
+
+        .custom-admin-table td {
+            padding: 16px 20px;
+            vertical-align: middle;
+            border: none;
+            color: var(--text-main);
+            font-size: 0.92rem;
+            font-weight: 500;
+        }
+
+    /* Kullanıcı Avatarı */
+    .user-avatar-circle {
+        width: 44px;
+        height: 44px;
+        border-radius: 14px;
+        object-fit: cover;
+        box-shadow: 0 4px 10px rgba(16, 185, 129, 0.2);
+        border: 2px solid #ffffff;
+    }
+
+    .user-avatar-initials {
+        width: 44px;
+        height: 44px;
+        border-radius: 14px;
+        background: linear-gradient(135deg, #10b981, #06b6d4);
+        color: #ffffff;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: 700;
+        font-size: 1.1rem;
+        box-shadow: 0 4px 10px rgba(16, 185, 129, 0.25);
+        border: 2px solid #ffffff;
+    }
+
+    .user-full-name {
+        font-weight: 700;
+        color: var(--text-main);
+        font-size: 0.95rem;
+    }
+
+    .user-sub-email {
+        font-size: 0.8rem;
+        color: var(--text-muted);
+        font-weight: 400;
+    }
+
+    .badge-id {
+        font-size: 0.78rem;
+        font-weight: 700;
+        color: var(--brand-3);
+        background: rgba(16, 185, 129, 0.12);
+        padding: 5px 12px;
+        border-radius: 20px;
+    }
+
+    .btn-edit-emerald {
+        padding: 8px 18px;
+        border-radius: 12px;
+        background: #ffffff;
+        border: 1px solid rgba(5, 150, 105, 0.25);
+        color: #059669;
+        font-weight: 600;
+        font-size: 0.85rem;
+        text-decoration: none;
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        transition: all 0.25s ease;
+    }
+
+        .btn-edit-emerald:hover {
+            background: linear-gradient(135deg, #059669, #0891b2);
+            color: #ffffff;
+            border-color: transparent;
+            box-shadow: 0 6px 16px rgba(16, 185, 129, 0.35);
+            transform: translateY(-2px);
+        }
+
+    /* ========== RESPONSIVE ========== */
+    @@media (max-width: 992px) {
+        .custom-admin-table th {
+            display: none;
+        }
+
+        .custom-admin-table tbody tr {
+            display: flex;
+            flex-direction: column;
+            padding: 16px;
+            border-radius: 16px !important;
+            margin-bottom: 12px;
+        }
+
+        .custom-admin-table td {
+            padding: 8px 0;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+            .custom-admin-table td::before {
+                content: attr(data-label);
+                font-weight: 700;
+                color: var(--text-muted);
+                font-size: 0.8rem;
+                text-transform: uppercase;
+            }
+
+            .custom-admin-table td:last-child {
+                justify-content: flex-end;
+                margin-top: 10px;
+                padding-top: 14px;
+                border-top: 1px solid rgba(226, 232, 240, 0.8);
+            }
+    }
+
+    @@media (max-width: 768px) {
+        .admin-viewport {
+            padding: 16px 8px;
+        }
+
+        .admin-frame {
+            padding: 20px;
+            border-radius: 20px;
+        }
+
+        .admin-console-header {
+            flex-direction: column;
+            align-items: flex-start;
+        }
+
+        .user-search-wrapper {
+            max-width: 100%;
+        }
+    }
+</style>
+
+<div class="admin-viewport">
+    <div class="admin-frame">
+
+        <!-- Üst Konsol Başlığı -->
+        <header class="admin-console-header">
+            <div>
+                <span class="header-badge-title">
+                    <i class="bi bi-shield-check"></i> İdari Yönetim Modülü
+                </span>
+                <h1 class="main-title">Kullanıcı Yönetimi</h1>
+                <p class="main-desc">Sistemde aktif olan tüm kullanıcı hesapları ve detay bilgileri.</p>
+            </div>
+
+            <div class="d-flex align-items-center gap-2 flex-wrap">
+                <a asp-area="Admin" asp-controller="Dashboard" asp-action="Index" class="btn-action-glass">
+                    <i class="bi bi-speedometer2 text-success"></i>
+                    <span>Dashboard'a Dön</span>
+                </a>
+                <a asp-controller="Message" asp-action="Index" class="btn-action-glass">
+                    <i class="bi bi-inbox text-primary"></i>
+                    <span>Gelen Kutusu</span>
+                </a>
+            </div>
+        </header>
+
+        <!-- Arama & Filtreleme Çubuğu -->
+        <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-3">
+            <div class="user-search-wrapper">
+                <i class="bi bi-search"></i>
+                <input type="text" id="userSearchInput" class="user-search-input" placeholder="Ad, soyad veya e-postaya göre ara..." onkeyup="filterUserRows()">
+            </div>
+
+            <span class="badge rounded-pill" style="font-size: 0.82rem; font-weight: 700; padding: 8px 18px; background: rgba(16, 185, 129, 0.12); color: #059669;">
+                Toplam @Model.Count Kullanıcı
+            </span>
+        </div>
+
+        <!-- Kullanıcı Tablosu -->
+        <div class="table-container-card">
+            <div class="table-responsive" style="overflow-x: auto;">
+                <table class="custom-admin-table" id="userTable">
+                    <thead>
+                        <tr>
+                            <th>Kullanıcı</th>
+                            <th>Kullanıcı Adı</th>
+                            <th>Telefon</th>
+                            <th>Durum</th>
+                            <th class="text-end">İşlemler</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var item in Model)
+                        {
+                            <tr data-search="@($"{item.FirstName} {item.LastName} {item.Email} {item.UserName}".ToLower())">
+                                <!-- Kullanıcı Profil & Ad -->
+                                <td data-label="Kullanıcı">
+                                    <div class="d-flex align-items-center gap-3">
+                                        @if (!string.IsNullOrEmpty(item.ProfileImageUrl))
+                                        {
+                                            <img src="@item.ProfileImageUrl" alt="Profil" class="user-avatar-circle" />
+                                        }
+                                        else
+                                        {
+                                            <div class="user-avatar-initials">
+                                                @(item.FirstName?.Substring(0, 1) ?? "U")
+                                            </div>
+                                        }
+                                        <div>
+                                            <div class="user-full-name">@item.FirstName @item.LastName</div>
+                                            <div class="user-sub-email">@item.Email</div>
+                                        </div>
+                                    </div>
+                                </td>
+
+                                <!-- Kullanıcı Adı -->
+                                <td data-label="Kullanıcı Adı">
+                                    <span class="fw-semibold" style="color: #334155;">@@@item.UserName</span>
+                                </td>
+
+                                <!-- Telefon -->
+                                <td data-label="Telefon" style="color: #64748b;">
+                                    @(string.IsNullOrEmpty(item.PhoneNumber) ? "-" : item.PhoneNumber)
+                                </td>
+
+                                <!-- Durum / ID -->
+                                <td data-label="Kimlik">
+                                    <span class="badge-id">#@item.Id</span>
+                                </td>
+
+                                <!-- Aksiyon -->
+                                <td data-label="İşlemler" class="text-end">
+                                    <a href="#" class="btn-edit-emerald">
+                                        <i class="bi bi-pencil-square"></i>
+                                        <span>Düzenle</span>
+                                    </a>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+<script>
+    function filterUserRows() {
+        const query = document.getElementById('userSearchInput').value.toLowerCase();
+        document.querySelectorAll('#userTable tbody tr').forEach(function (row) {
+            const searchData = row.getAttribute('data-search') || '';
+            row.style.display = searchData.includes(query) ? '' : 'none';
+        });
+    }
+</script>
