@@ -43,15 +43,14 @@ M&Y Yazılım Eğitim Akademi Danışmanlık 11. dönem öğrencisi olarak, değ
 	 `dotnet run --project IdentityMail.web`
 
 ## Ekran görüntüleri
-Resimler projenizdeki `Img` klasöründe yer alıyor. README içine ekran görüntüsü eklemek için örnek kullanım (kendi dosya adlarınızla değiştirin):
 
 ```
-![Ana Sayfa](./IdentityMail.web/Img/home.png)
-![Dashboard](./IdentityMail.web/Img/dashboard.png)
-![Gelen Kutusu](./IdentityMail.web/Img/inbox.png)
+![Ana Sayfa](./IdentityMail.web/Img/AdminPanel.png)
+![Dashboard](./IdentityMail.web/Img/SendMessage.png)
+![Gelen Kutusu](./IdentityMail.web/Img/Login.png)
 ```
 
-Not: Eğer `Img` klasörü farklı bir yerdeyse (ör. `wwwroot/Img`), yolları buna göre güncelleyin.
+
 
 ## Geliştirme notları
 - Proje .NET 10 hedeflidir; VS 2026 ile uyumludur.
